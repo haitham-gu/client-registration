@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - إدارة العملاء</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#0d6efd">
+    <style>
+        /* Admin-specific styles */
+        .admin-header { 
+            background: linear-gradient(135deg, #1e293b, #334155); 
+            color: white; 
+            padding: 1rem 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+            pointer-events: none;
+        }
+        .admin-title { margin: 0; font-size: 1.8rem; font-weight: 800; position: relative; z-index: 1; }
+        .admin-nav { display: flex; gap: 1rem; position: relative; z-index: 1; }
+        .admin-nav a { 
+            color: #cbd5e1; 
+            text-decoration: none; 
+            padding: 0.75rem 1.25rem; 
+            border-radius: 8px; 
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .admin-nav a:hover, .admin-nav a.active { 
+            background: rgba(255,255,255,0.15); 
+            color: white; 
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+        
+        .admin-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-card { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06); 
+            border-left: 4px solid var(--brand); 
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--brand), rgba(59, 130, 246, 0.1));
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+            opacity: 0.1;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+        }
+        .stat-number { font-size: 2.5rem; font-weight: 900; color: var(--brand); margin-bottom: 0.5rem; }
+        .stat-label { color: #64748b; margin-top: 0.5rem; font-weight: 500; }
+        
+        .controls { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06); 
+            margin-bottom: 2rem; 
+        }
+        .controls-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 300px; }
+        .search-box input { 
+            width: 100%; 
+            padding: 1rem 1.25rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .search-box input:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+        
+        .clients-table { 
+            background: white; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06); 
+        }
+        .table-header { 
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9); 
+            padding: 1.5rem; 
+            border-bottom: 1px solid #e2e8f0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .table-header h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+        .table-content { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1.25rem; text-align: right; border-bottom: 1px solid #f1f5f9; }
+        th { background: #f8fafc; font-weight: 600; color: #374151; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover { background: linear-gradient(135deg, #f8fafc, #f1f5f9); }
+        .client-code { 
+            font-family: 'Courier New', monospace; 
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0); 
+            padding: 0.5rem 0.75rem; 
+            border-radius: 8px; 
+            font-weight: 600;
+            color: #374151;
+        }
+        .btn-small { 
+            padding: 0.5rem 1rem; 
+            font-size: 0.875rem; 
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-outline { background: white; border: 1px solid #e2e8f0; color: #374151; }
+        .btn-outline:hover { background: #f8fafc; }
+        
+        .btn-excel { 
+            background: linear-gradient(135deg, #16a34a, #15803d); 
+            color: white; 
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-excel:hover { 
+            background: linear-gradient(135deg, #15803d, #166534); 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        .excel-icon { font-size: 1.1rem; }
+        
+        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; }
+        .pagination button { 
+            padding: 0.75rem 1.25rem; 
+            border: 2px solid #e2e8f0; 
+            background: white; 
+            cursor: pointer; 
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .pagination button:hover { 
+            background: #f8fafc; 
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+        .pagination button.active { 
+            background: var(--brand); 
+            color: white; 
+            border-color: var(--brand);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .pagination button:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            transform: none;
+        }
+        
+        .loading { 
+            text-align: center; 
+            padding: 3rem; 
+            color: #64748b; 
+            font-size: 1.1rem;
+        }
+        .empty-state { 
+            text-align: center; 
+            padding: 4rem; 
+            color: #64748b; 
+        }
+        .empty-state .icon { 
+            font-size: 4rem; 
+            margin-bottom: 1.5rem; 
+            opacity: 0.6; 
+        }
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .admin-nav {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-box {
+                min-width: auto;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <h1 class="admin-title">لوحة التحكم</h1>
+        <nav class="admin-nav">
+            <a href="#" class="active">العملاء</a>
+            <a href="index.html">الموقع الرئيسي</a>
+            <a href="register.html">نموذج التسجيل</a>
+            <a href="#" onclick="logout()">تسجيل الخروج</a>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalClients">-</div>
+                <div class="stat-label">إجمالي العملاء</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayClients">-</div>
+                <div class="stat-label">تسجيلات اليوم</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="thisWeekClients">-</div>
+                <div class="stat-label">تسجيلات هذا الأسبوع</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="topWilaya">-</div>
+                <div class="stat-label">أكثر ولاية</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="controls-row">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="البحث بالاسم، الهاتف، أو كود العميل...">
+                </div>
+                <button class="btn primary" onclick="refreshData()">تحديث</button>
+                <button class="btn btn-excel" onclick="exportData()">
+                    <span class="excel-icon">📊</span>
+                    تصدير Excel
+                </button>
+                <select id="filterWilaya" onchange="filterData()">
+                    <option value="">جميع الولايات</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Clients Table -->
+        <div class="clients-table">
+            <div class="table-header">
+                <h3>قائمة العملاء</h3>
+                <span id="resultsCount">جاري التحميل...</span>
+            </div>
+            <div class="table-content">
+                <div id="loadingState" class="loading">
+                    <div>جاري تحميل البيانات...</div>
+                </div>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="icon">📋</div>
+                    <h3>لا توجد نتائج</h3>
+                    <p>جرب تغيير معايير البحث أو المرشح</p>
+                </div>
+                <table id="clientsTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>كود العميل</th>
+                            <th>الاسم الكامل</th>
+                            <th>هاتف الجزائر</th>
+                            <th>هاتف فرنسا</th>
+                            <th>الولاية</th>
+                            <th>المدينة الفرنسية</th>
+                            <th>تاريخ التسجيل</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" style="display: none;">
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

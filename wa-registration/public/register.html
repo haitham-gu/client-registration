@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل العملاء</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#0d6efd">
+    <style>
+      /* Minimal inline fallback to ensure visibility even if external CSS fails */
+      .nojs-warning { background: #fff3cd; color: #664d03; padding: 10px 12px; border: 1px solid #ffe69c; border-radius: 8px; margin: 10px auto; max-width: 720px; font-size: 14px; }
+    </style>
+</head>
+<body class="register-page">
+    <noscript>
+        <div class="nojs-warning">هذه الصفحة تحتاج إلى JavaScript لعرض التأثيرات. النموذج سيظهر بدون الحركات.</div>
+    </noscript>
+    <div id="bg-shapes">
+        <span class="shape" style="--dur:12s; --delay:0s; top:10%; right:10%; width:180px; height:180px;"></span>
+        <span class="shape square" style="--dur:16s; --delay:1s; bottom:12%; left:8%; width:240px; height:240px;"></span>
+        <span class="shape" style="--dur:18s; --delay:.5s; top:60%; right:30%; width:140px; height:140px;"></span>
+        <span class="shape" style="--dur:14s; --delay:2s; bottom:40%; right:15%; width:200px; height:200px;"></span>
+        <span class="shape square" style="--dur:15s; --delay:1.5s; top:20%; left:20%; width:160px; height:160px;"></span>
+    </div>
+
+    <section class="register-section glass reveal" id="register" aria-labelledby="register-title">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <a href="index.html" style="color: #64748b; text-decoration: none; font-size: 0.9rem;">← العودة إلى الصفحة الرئيسية</a>
+        </div>
+        <h3 id="register-title" class="reveal">نموذج التسجيل</h3>
+        <p class="form-intro reveal" style="margin: .25rem 0 1rem; color:#64748b; font-size:.95rem;">املأ بياناتك بدقة. الحقول تفاعلية ويمكنك البحث داخل القوائم.</p>
+        <form id="registerForm" novalidate>
+            <div class="form-grid">
+                <div class="field reveal">
+                    <label for="fullName">الاسم الكامل</label>
+                    <div class="input">
+                        <span class="icon">👤</span>
+                        <input id="fullName" type="text" name="fullName" required placeholder="اكتب اسمك الكامل">
+                        
+                    </div>
+                    <small class="hint">اكتب اسمك كما يظهر في وثائقك الرسمية.</small>
+                </div>
+
+                <div class="field reveal">
+                    <label for="phoneDZ">رقم الهاتف (الجزائر)</label>
+                    <div class="input">
+                        <span class="icon">🇩🇿</span>
+                        <input id="phoneDZ" type="tel" name="phoneDZ" inputmode="numeric" pattern="[0-9]+" required placeholder="مثال: 0550123456">
+                    </div>
+                    <small class="hint">أدخل الأرقام فقط بدون فراغات.</small>
+                </div>
+
+                <div class="field reveal">
+                    <label for="phoneFR">رقم الهاتف (فرنسا)</label>
+                    <div class="input">
+                        <span class="icon">🇫🇷</span>
+                        <input id="phoneFR" type="tel" name="phoneFR" inputmode="numeric" pattern="[0-9]+" required placeholder="مثال: 0612345678">
+                    </div>
+                    <small class="hint">أدخل الأرقام فقط بدون فراغات.</small>
+                </div>
+
+                <div class="field reveal">
+                    <label for="wilaya">الولاية (الجزائر)</label>
+                    <div class="input">
+                        <span class="icon">📍</span>
+                        <input id="wilaya" name="wilaya" list="wilayasList" required placeholder="ابدأ بالكتابة للبحث">
+                    </div>
+                    <small class="hint">يمكنك البحث بالاسم بسرعة داخل القائمة.</small>
+                </div>
+
+                <div class="field reveal">
+                    <label for="cityFR">المدينة (فرنسا)</label>
+                    <div class="input">
+                        <span class="icon">🏙️</span>
+                        <input id="cityFR" name="cityFR" list="cityFRList" required placeholder="اكتب للبحث عن مدينة">
+                    </div>
+                    <small class="hint">اختر أقرب مدينة إليك في فرنسا.</small>
+                </div>
+            </div>
+
+                        <button type="submit" class="btn primary reveal">إرسال الطلب</button>
+                        <p id="formMsg" class="form-msg" role="alert" aria-live="polite"></p>
+
+            <!-- Dynamic lists populated via script.js -->
+            <datalist id="wilayasList"></datalist>
+            <datalist id="cityFRList"></datalist>
+        </form>
+    </section>
+
+        <!-- Success Modal -->
+        <div id="successModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="successTitle" aria-modal="true" style="display:none;">
+            <div class="modal-backdrop"></div>
+            <div class="modal-card">
+                <div class="modal-icon">🎉</div>
+                <h3 id="successTitle">تم التسجيل بنجاح</h3>
+                <p class="modal-text">تم إنشاء كود العميل الخاص بك.</p>
+                <div class="code-row">
+                    <code id="clientCode">CL-XXXXXX</code>
+                    <button id="copyCodeBtn" class="btn copy">نسخ</button>
+                </div>
+                <button id="closeModalBtn" class="btn primary">إغلاق</button>
+            </div>
+        </div>
+        <div id="confettiCanvas" class="confetti-layer" aria-hidden="true"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
